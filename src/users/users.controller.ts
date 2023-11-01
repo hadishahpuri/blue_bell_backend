@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,8 +9,8 @@ export class UsersController {
   constructor(private userService: UserService) {}
 
   @Post('login')
-  login(@Body() loginDro: LoginDto): object {
-    return {};
+  login(@Res() res, @Body() loginDro: LoginDto) {
+    res.status(HttpStatus.OK).json([]);
   }
 
   @Post('register')

@@ -11,4 +11,8 @@ export class UserService {
   create(createUserDto: CreateUserDto): Promise<User> {
     return new this.userModel(createUserDto).save();
   }
+
+  findByEmail(email: String) {
+    return this.userModel.find({ email: email }).exec();
+  }
 }
