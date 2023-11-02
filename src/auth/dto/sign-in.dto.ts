@@ -3,17 +3,17 @@ import { IsEmail, IsString, Length, MinLength } from 'class-validator';
 
 export class SignInDto {
   @IsEmail()
-  email: String;
+  email: string;
 
   @IsString()
   @Length(3, 50)
-  name: String;
+  name: string;
 
   @IsString()
   @MinLength(5)
-  password: String;
+  password: string;
 
   @IsString()
   @MinLength(5)
-  password_confirm: String;
+  password_confirm: string;
 }

@@ -8,7 +8,7 @@ Injectable();
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  create(createUserDto: CreateUserDto): User {
     return new this.userModel(createUserDto).save();
   }
 
