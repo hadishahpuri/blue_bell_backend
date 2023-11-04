@@ -1,39 +1,66 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from 'src/users/users.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/user.schema';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
+  private round: number;
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private round = 10,
-  ) {}
+  ) {
+    this.round = 10;
+  }
 
   async singIn(signInDto: SignInDto): Promise<any> {
-    const userExists = this.userService.findByEmail(signInDto.email);
+    const userExists = await this.userService.findByEmail(signInDto.email);
+
     if (userExists) {
-      throw new UnauthorizedException();
+      throw new HttpException(
+        'Email already taken!',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
     if (signInDto.password != signInDto.password_confirm) {
-      throw new UnprocessableEntityException();
+      throw new HttpException(
+        'The password field does not match the password confirmation!',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
-    const user = this.userService.create({
+    const user = await this.userService.create({
       name: signInDto.name,
       email: signInDto.email,
       password: this.hashPassword(signInDto.password).toString(),
     });
 
-    return this.generateAccessToken(user);
+    const accessToken = this.generateAccessToken(user);
+    return {
+      user: user,
+      access_token: accessToken,
+    };
+  }
+
+  async login(loginDto: LoginDto) {
+    const user = await this.userService.findByEmail(loginDto.email);
+
+    if (
+      !user ||
+      !(await this.hashPasswordIsCorrect(loginDto.password, user.password))
+    ) {
+      throw new HttpException('Invalid credentials!', HttpStatus.UNAUTHORIZED);
+    }
+
+    const accessToken = this.generateAccessToken(user);
+    return {
+      user: user,
+      access_token: accessToken,
+    };
   }
 
   async hashPassword(password: string) {

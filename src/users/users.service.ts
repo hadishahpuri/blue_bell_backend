@@ -8,11 +8,11 @@ Injectable();
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  create(createUserDto: CreateUserDto): User {
-    return new this.userModel(createUserDto).save();
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return await new this.userModel(createUserDto).save();
   }
 
-  findByEmail(email: String) {
-    return this.userModel.find({ email: email }).exec();
+  async findByEmail(email: String) {
+    return await this.userModel.findOne({ email: email }).exec();
   }
 }
