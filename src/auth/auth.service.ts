@@ -36,10 +36,10 @@ export class AuthService {
     const user = await this.userService.create({
       name: signInDto.name,
       email: signInDto.email,
-      password: this.hashPassword(signInDto.password).toString(),
+      password: await this.hashPassword(signInDto.password),
     });
 
-    const accessToken = this.generateAccessToken(user);
+    const accessToken = await this.generateAccessToken(user);
     return {
       user: user,
       access_token: accessToken,
@@ -56,7 +56,7 @@ export class AuthService {
       throw new HttpException('Invalid credentials!', HttpStatus.UNAUTHORIZED);
     }
 
-    const accessToken = this.generateAccessToken(user);
+    const accessToken = await this.generateAccessToken(user);
     return {
       user: user,
       access_token: accessToken,
@@ -73,8 +73,6 @@ export class AuthService {
 
   async generateAccessToken(user: User) {
     const payload = { sub: user.email };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    return await this.jwtService.signAsync(payload);
   }
 }
