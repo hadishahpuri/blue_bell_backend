@@ -3,8 +3,8 @@ import { UserService } from 'src/users/users.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from 'src/users/user.schema';
 import { LoginDto } from './dto/login.dto';
+import { User } from '../users/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -57,6 +57,8 @@ export class AuthService {
     }
 
     const accessToken = await this.generateAccessToken(user);
+    delete user['password'];
+
     return {
       user: user,
       access_token: accessToken,

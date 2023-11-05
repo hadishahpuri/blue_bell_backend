@@ -17,6 +17,6 @@ export class AuthController {
   @Post('login')
   async login(@Res() res: Response, @Body() loginDto: LoginDto) {
     const user = await this.authService.login(loginDto);
-    res.send(user);
+    res.status(HttpStatus.OK).send(user);
   }
 }

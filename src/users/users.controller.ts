@@ -8,6 +8,6 @@ export class UsersController {
 
   @Get()
   async users(@Res() res: Response) {
-    res.send(this.userService.getAll());
+    res.send(await this.userService.getAll());
   }
 }
